@@ -1,0 +1,97 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Web.UI;
+using System.Web.UI.WebControls;
+using Microsoft.VisualBasic;
+
+namespace odev
+{
+    public partial class odev : System.Web.UI.Page
+    {
+        protected void Page_Load(object sender, EventArgs e)
+        {
+
+        }
+
+        protected void urun_girisi_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                liste.Items.Clear();
+                byte adet = Convert.ToByte(Interaction.InputBox("Kaç Adet Ürün Girilecek", "Ürün Adedi", "", -1, -1));
+                string[] urunler = new string[adet];
+                int[] fiyatlar = new int[adet];
+                byte sayac = 0;
+                while (sayac < adet)
+                {
+                    urunler[sayac] = Interaction.InputBox("Ürün Adını Giriniz", "Ürün Adı", "", -1, -1);
+                    fiyatlar[sayac] = Convert.ToInt32(Interaction.InputBox("Girilen Ürünün Fiyatını Giriniz", "Ürün Fiyatı", "", -1, -1));
+                    sayac++;
+                    byte sonuc = Convert.ToByte(Interaction.MsgBox("Devam Edecek Misiniz?", MsgBoxStyle.YesNo));
+                    if (sonuc == 7) break;
+                }//while
+                Array.Resize(ref urunler, sayac);
+                Array.Resize(ref fiyatlar, sayac);
+                byte i = 0;
+                liste.Items.Add("Ürünler : Fiyatlar");
+                foreach (string urun in urunler)
+                {
+                    liste.Items.Add(urun + " : " + Convert.ToString(fiyatlar[i]));
+                    i++;
+                }
+                byte secim = Convert.ToByte(Interaction.MsgBox("1) Ürün aramak için 'Yes' \n2) Fiyat ortalamaları için 'No' \n3) En düşük ve en yüksek fiyat için 'Cancel' a basın", MsgBoxStyle.YesNoCancel));
+                //hocam 'Yes','No','Cancel' butonlarını manuel değiştirmeye çalıştım ama yapamayınca böyle bıraktım.
+                if (secim == 6)
+                {
+                    string aranan_urun = Interaction.InputBox("Aranacak Ürün İsmini Giriniz", "Aranan Ürün", "", -1, -1);
+                    byte k = 0;
+                    foreach (string urun in urunler)
+                    {
+                        //liste.Items.Add(urun);
+                        if (urun == aranan_urun) k++;
+                    }
+                    if (k == 0) liste.Items.Add("Aradığınız ürün listede yok");
+                    else liste.Items.Add("Aradığınız üründen " + k + " adet benzer bulunmaktadır");
+                }//if=6
+                else if (secim == 7)
+                {
+                    double ort = 0;
+                    int toplam = 0;
+                    byte m = 0;
+                    foreach (byte fiyat in fiyatlar)
+                    {
+                        toplam += fiyat;
+                        m++;
+                        if (m == sayac) break;
+                    }
+                    ort = toplam / sayac;
+                    liste.Items.Add("Fiyatların ortalaması : " + ort);
+                }//if=7
+                else
+                {
+                    int kucuk = fiyatlar[0];
+                    int buyuk = fiyatlar[0];
+                    for (int n = 0; n < sayac; n++)
+                    {
+                        if (fiyatlar[n] < kucuk) kucuk = fiyatlar[n];
+                    }
+                    for (int o = 0; o < sayac; o++)
+                    {
+                        if (fiyatlar[o] > buyuk) buyuk = fiyatlar[o];
+                    }
+                    liste.Items.Add("En düşük fiyat : " + kucuk);
+                    liste.Items.Add("En yüksek fiyat : " + buyuk);
+                }//else=2
+            }//try
+            catch (Exception hata) 
+            {
+                if (hata is FormatException) Interaction.MsgBox("Lütfen rakam giriniz!", MsgBoxStyle.OkOnly);
+                else if (hata is OverflowException) Interaction.MsgBox("Lütfen 2 milyardan küçük rakamlar giriniz!", MsgBoxStyle.OkOnly);
+                else Interaction.MsgBox("Lütfen yazılımcı ile temasa geçiniz!", MsgBoxStyle.OkOnly);
+            }//catch
+
+        }
+    }
+}
