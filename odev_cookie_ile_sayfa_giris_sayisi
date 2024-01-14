@@ -1,0 +1,34 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Runtime.ConstrainedExecution;
+using System.Web;
+using System.Web.UI;
+using System.Web.UI.WebControls;
+
+namespace odev_3
+{
+    public partial class Giris : System.Web.UI.Page
+    {
+        protected void Page_Load(object sender, EventArgs e)
+        {     
+            if (Request.Cookies["bilgi"] == null)
+            {
+                Response.Write("BU SAYFAYA İLK GELİŞİNİZ. HOŞGELDİNİZ");
+                HttpCookie cerez = new HttpCookie("bilgi");
+                cerez["giris_sayisi"] = "2";
+                Response.Cookies.Add(cerez);                
+            }
+            else
+            {
+                HttpCookie cerezim = new HttpCookie("bilgi");
+                cerezim = Request.Cookies["bilgi"];
+                int i = Convert.ToInt32(cerezim["giris_sayisi"]);
+                Response.Write("BU SAYFAYI " +i+ ". ZİYARETİNİZ");
+                i++;
+                cerezim["giris_sayisi"] = i.ToString();
+                Response.Cookies.Add(cerezim);
+            }      
+        }
+    }
+}
